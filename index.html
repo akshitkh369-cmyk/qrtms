@@ -2,189 +2,168 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-:root{--pri:#0a1628;--sec:#1e3a5f;--acc:#3b82f6;--grn:#10b981;--red:#ef4444;--org:#f59e0b;--bg:#f1f5f9;--card:#fff;--txt:#1e293b;--sub:#64748b}
-body{background:var(--bg)}
-.qr-header{background:linear-gradient(135deg,var(--pri),var(--sec));color:#fff;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.qr-header h1{font-size:1.4rem;letter-spacing:1px}
-.qr-header span{font-size:.75rem;opacity:.7}
-.qr-nav{background:var(--pri);display:flex;overflow-x:auto;padding:0 10px;gap:2px}
-.qr-nav button{background:none;border:none;color:#94a3b8;padding:12px 16px;font-size:.8rem;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:.2s}
-.qr-nav button.active,.qr-nav button:hover{color:#fff;border-bottom-color:var(--acc)}
-.qr-section{display:none;padding:20px;max-width:1200px;margin:0 auto}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+:root{--pri:#1a1a2e;--sec:#e8e0d4;--acc:#2d6a4f;--grn:#2d6a4f;--red:#c1121f;--org:#e76f51;--txt:#1a1a2e;--sub:#6b7280;--bg:#f5f3ef;--card:rgba(255,255,255,0.65);--glass:rgba(255,255,255,0.45);--border:rgba(0,0,0,0.08)}
+body{background:var(--bg);color:var(--txt);min-height:100vh}
+.qr-header{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.qr-header h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:600;color:var(--txt);letter-spacing:-0.5px}
+.qr-header span{font-size:.8rem;color:var(--sub);font-weight:400}
+.qr-nav{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;overflow-x:auto;gap:0}
+.qr-nav button{background:none;border:none;padding:14px 20px;font-size:.85rem;cursor:pointer;white-space:nowrap;color:var(--sub);font-weight:500;border-bottom:2px solid transparent;transition:all .3s}
+.qr-nav button.active,.qr-nav button:hover{color:var(--txt);border-bottom-color:var(--txt)}
+.qr-section{display:none;padding:32px;max-width:1200px;margin:0 auto}
 .qr-section.active{display:block}
-.qr-card{background:var(--card);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.qr-card h2{font-size:1.2rem;color:var(--pri);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--acc)}
-.qr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.qr-stat{background:linear-gradient(135deg,var(--pri),var(--sec));color:#fff;border-radius:12px;padding:20px;text-align:center}
-.qr-stat .num{font-size:2rem;font-weight:700}
-.qr-stat .lbl{font-size:.8rem;opacity:.8;margin-top:4px}
-.qr-input{width:100%;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:.9rem;margin-bottom:12px;outline:none;transition:.2s}
-.qr-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.qr-card{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.qr-card h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;margin-bottom:8px;color:var(--txt)}
+.qr-card h3{font-size:1rem;font-weight:600;margin-bottom:12px}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.qr-stat{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center;transition:transform .2s,box-shadow .2s}
+.qr-stat:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+.qr-stat .num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;margin-bottom:4px}
+.qr-stat .lbl{font-size:.8rem;color:var(--sub);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+.stat-guards .num{color:var(--txt)}
+.stat-active .num{color:var(--grn)}
+.stat-term .num{color:var(--red)}
+.stat-paid .num{color:var(--txt)}
+.stat-expiry .num{color:var(--org)}
+.qr-input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--card);backdrop-filter:blur(8px);outline:none;transition:.2s;color:var(--txt)}
+.qr-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(45,106,79,0.1)}
 textarea.qr-input{min-height:80px;resize:vertical}
 select.qr-input{cursor:pointer}
-label.qr-label{display:block;font-size:.85rem;font-weight:600;color:var(--txt);margin-bottom:4px}
-.qr-btn{padding:10px 20px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
-.qr-btn-pri{background:var(--acc);color:#fff}.qr-btn-pri:hover{background:#2563eb}
-.qr-btn-grn{background:var(--grn);color:#fff}.qr-btn-grn:hover{background:#059669}
-.qr-btn-red{background:var(--red);color:#fff}.qr-btn-red:hover{background:#dc2626}
+label,.qr-label{display:block;font-size:.85rem;font-weight:500;color:var(--sub);margin-bottom:6px}
+.qr-btn{padding:12px 24px;border:none;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.qr-btn-pri{background:var(--txt);color:#fff}.qr-btn-pri:hover{background:#2d2d44}
+.qr-btn-grn{background:var(--grn);color:#fff}.qr-btn-grn:hover{background:#1e5038}
+.qr-btn-red{background:var(--red);color:#fff}.qr-btn-red:hover{background:#a00f1a}
 .qr-btn-org{background:var(--org);color:#fff}
-.qr-btn-sm{padding:6px 12px;font-size:.8rem}
-table.qr-table{width:100%;border-collapse:collapse;font-size:.85rem}
-.qr-table th{background:var(--pri);color:#fff;padding:10px;text-align:left}
-.qr-table td{padding:10px;border-bottom:1px solid #e2e8f0}
-.qr-table tr:hover{background:#f8fafc}
-.qr-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
-.badge-active{background:#d1fae5;color:#065f46}
-.badge-terminated{background:#fee2e2;color:#991b1b}
-.badge-warn{background:#fef3c7;color:#92400e}
-.badge-ok{background:#dbeafe;color:#1e40af}
-.qr-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:200;justify-content:center;align-items:center;padding:20px}
+.qr-btn-sm{padding:8px 14px;font-size:.8rem;border-radius:8px}
+table,.qr-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.qr-table th{background:var(--glass);backdrop-filter:blur(8px);color:var(--txt);padding:12px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--border)}
+.qr-table td{padding:12px 14px;border-bottom:1px solid var(--border)}
+.qr-table tr:hover{background:rgba(0,0,0,0.02)}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-active{background:#ecfdf5;color:#065f46}
+.badge-terminated{background:#fef2f2;color:#991b1b}
+.badge-warn{background:#fffbeb;color:#92400e}
+.badge-ok{background:#ecfdf5;color:#065f46}
+.qr-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);z-index:200;justify-content:center;align-items:center;padding:20px}
 .qr-modal.show{display:flex}
-.qr-modal-content{background:#fff;border-radius:16px;padding:30px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto}
-.qr-toast{position:fixed;top:20px;right:20px;background:var(--grn);color:#fff;padding:14px 24px;border-radius:10px;z-index:300;display:none;font-weight:600}
-.qr-email-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:.85rem;white-space:pre-wrap;max-height:400px;overflow-y:auto;margin:12px 0}
+.qr-modal-content{background:#fff;border-radius:20px;padding:32px;max-width:700px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.1)}
+.qr-toast{position:fixed;top:20px;right:20px;background:var(--card);backdrop-filter:blur(16px);border:1px solid var(--border);color:var(--txt);padding:14px 24px;border-radius:12px;font-size:.85rem;z-index:300;display:none;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
+.qr-email-box{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:12px;padding:20px;font-size:.85rem;white-space:pre-wrap;max-height:400px;overflow-y:auto;line-height:1.6}
 .qr-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.qr-cal-day{padding:8px 4px;text-align:center;font-size:.75rem;border-radius:6px;cursor:pointer;min-height:40px}
-.qr-cal-day.today{background:var(--acc);color:#fff}
-.qr-cal-day.has-payment{background:#d1fae5;border:2px solid var(--grn)}
-.qr-cal-day.header{font-weight:700;color:var(--pri)}
-.qr-cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.qr-countdown{font-size:.85rem;padding:4px 10px;border-radius:6px;font-weight:600}
-.cd-green{background:#d1fae5;color:#065f46}
-.cd-yellow{background:#fef3c7;color:#92400e}
-.cd-red{background:#fee2e2;color:#991b1b}
-@media(max-width:768px){.qr-nav{flex-wrap:nowrap}.qr-nav button{padding:10px 12px;font-size:.72rem}.qr-grid{grid-template-columns:1fr}.qr-table{font-size:.75rem}.qr-modal-content{padding:20px;margin:10px}}
+.qr-cal-day{padding:8px 4px;text-align:center;font-size:.75rem;border-radius:8px;cursor:pointer;min-height:44px;transition:.2s}
+.qr-cal-day.today{background:var(--glass);backdrop-filter:blur(4px);border:1px solid var(--border)}
+.qr-cal-day.has-payment{background:#ecfdf5;border:1px solid #bbf7d0}
+.qr-cal-day-header{font-weight:700;color:var(--sub);font-size:.7rem;text-transform:uppercase}
+.qr-cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.qr-countdown{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600}
+.cd-green{color:#065f46}
+.cd-red{color:#c1121f}
+.form-link{color:var(--acc);text-decoration:underline;cursor:pointer}
+.activity-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+@media(max-width:768px){.qr-header{padding:12px 16px}.qr-nav{padding:0 16px}.qr-section{padding:16px}.qr-grid{grid-template-columns:1fr 1fr}.qr-stat .num{font-size:1.6rem}}
+@media(max-width:480px){.qr-grid{grid-template-columns:1fr}}
 </style></head><body>
-<div class="qr-header"><div><h1>QRTMS</h1><span>Quick Response Team Management System | Alpha Security Services</span></div><span id="hdr-date"></span></div>
-<div class="qr-nav">
-<button class="active" data-sec="dashboard" onclick="showSection('dashboard')">Dashboard</button>
-<button data-sec="hire" onclick="showSection('hire')">Hire Guard</button>
-<button data-sec="roster" onclick="showSection('roster')">Guard Roster</button>
-<button data-sec="payments" onclick="showSection('payments')">Payments</button>
-<button data-sec="calendar" onclick="showSection('calendar')">Calendar</button>
-<button data-sec="employment" onclick="showSection('employment')">Employment Form</button>
-<button data-sec="emails" onclick="showSection('emails')">Email Templates</button>
-</div>
 <div id="qr-toast" class="qr-toast"></div>
-<div id="qr-modal" class="qr-modal" onclick="if(event.target===this)closeModal()"><div class="qr-modal-content" id="modal-body"></div></div>
+<div class="qr-header"><div><h1>QRTMS</h1><span>Quick Response Team Management | Alpha Security Services</span></div><span id="hdr-date"></span></div>
+<div class="qr-nav"><button class="active" onclick="showSection('dashboard')">Dashboard</button><button onclick="showSection('hire')">Hire Guard</button><button onclick="showSection('roster')">Guard Roster</button><button onclick="showSection('payments')">Payments</button><button onclick="showSection('calendar')">Calendar</button><button onclick="showSection('employment')">Employment Form</button><button onclick="showSection('emails')">Email Templates</button></div>
 <!-- Dashboard -->
 <div id="sec-dashboard" class="qr-section active">
-<div class="qr-grid">
-<div class="qr-stat"><div class="num" id="stat-total">0</div><div class="lbl">Total Guards</div></div>
-<div class="qr-stat" style="background:linear-gradient(135deg,#065f46,#10b981)"><div class="num" id="stat-active">0</div><div class="lbl">Active</div></div>
-<div class="qr-stat" style="background:linear-gradient(135deg,#991b1b,#ef4444)"><div class="num" id="stat-terminated">0</div><div class="lbl">Terminated</div></div>
-<div class="qr-stat" style="background:linear-gradient(135deg,#1e40af,#3b82f6)"><div class="num" id="stat-paid">$0</div><div class="lbl">Total Paid</div></div>
-<div class="qr-stat" style="background:linear-gradient(135deg,#92400e,#f59e0b)"><div class="num" id="stat-expiring">0</div><div class="lbl">Licences Expiring</div></div>
-</div>
-<div class="qr-card" style="margin-top:20px"><h2>Recent Activity</h2><div id="dash-activity">Loading...</div></div>
-</div>
-<!-- Hire -->
-<div id="sec-hire" class="qr-section">
-<div class="qr-card"><h2>Hire New Guard</h2>
-<form id="hire-form" onsubmit="event.preventDefault();hireGuard()">
-<div class="qr-grid">
-<div><label class="qr-label">First Name *</label><input name="firstName" class="qr-input" required></div>
-<div><label class="qr-label">Last Name *</label><input name="lastName" class="qr-input" required></div>
-<div><label class="qr-label">Email *</label><input name="email" type="email" class="qr-input" required></div>
-<div><label class="qr-label">Phone</label><input name="phone" class="qr-input"></div>
-<div><label class="qr-label">Position</label><select name="position" class="qr-input"><option>Uniformed Security Guard</option><option>Loss Prevention Officer</option><option>Mobile Patrol Guard</option><option>Supervisor</option></select></div>
-<div><label class="qr-label">Guard Level</label><select name="level" class="qr-input"><option>Level 1</option><option>Level 2</option></select></div>
-<div><label class="qr-label">Hourly Rate ($)</label><input name="rate" type="number" step="0.01" value="17.60" class="qr-input"></div>
-<div><label class="qr-label">Start Date</label><input name="startDate" type="date" class="qr-input"></div>
-<div><label class="qr-label">Security Licence #</label><input name="licenseNo" class="qr-input"></div>
-<div><label class="qr-label">Licence Expiry</label><input name="licenseExpiry" type="date" class="qr-input"></div>
-<div><label class="qr-label">First Aid/CPR Expiry</label><input name="firstAidExpiry" type="date" class="qr-input"></div>
-</div>
-<button type="submit" class="qr-btn qr-btn-grn" style="margin-top:16px">Hire Guard</button>
-</form></div></div>
-<!-- Roster -->
-<div id="sec-roster" class="qr-section">
-<div class="qr-card"><h2>Guard Roster</h2>
-<button class="qr-btn qr-btn-pri qr-btn-sm" onclick="downloadCSV()" style="margin-bottom:12px">Download CSV</button>
-<div style="overflow-x:auto"><table class="qr-table"><thead><tr><th>ID</th><th>Name</th><th>Position</th><th>Level</th><th>Rate</th><th>Licence Expiry</th><th>First Aid</th><th>Status</th><th>Actions</th></tr></thead><tbody id="roster-body"></tbody></table></div></div></div>
-<!-- Payments -->
-<div id="sec-payments" class="qr-section">
-<div class="qr-card"><h2>Record Payment</h2>
-<form id="pay-form" onsubmit="event.preventDefault();recordPayment()">
-<div class="qr-grid">
-<div><label class="qr-label">Select Guard</label><select name="guardId" id="pay-guard-select" class="qr-input"><option value="">Select Guard</option></select></div>
-<div><label class="qr-label">Wage ($/hr)</label><input name="wage" type="number" step="0.01" value="17.60" class="qr-input"></div>
-<div><label class="qr-label">Hours Worked</label><input name="hours" type="number" step="0.25" class="qr-input" required></div>
-<div><label class="qr-label">Payment Date</label><input name="payDate" type="date" class="qr-input"></div>
-</div>
-<label class="qr-label">Description of Hours</label><textarea name="description" class="qr-input" placeholder="Describe work performed, site, shift times..."></textarea>
-<button type="submit" class="qr-btn qr-btn-grn" style="margin-top:8px">Record Payment</button>
-</form></div>
-<div class="qr-card"><h2>Payment History</h2>
-<button class="qr-btn qr-btn-pri qr-btn-sm" onclick="downloadPayCSV()" style="margin-bottom:12px">Download CSV</button>
-<div style="overflow-x:auto"><table class="qr-table"><thead><tr><th>Date</th><th>Guard</th><th>Wage</th><th>Hours</th><th>Total</th><th>Description</th><th>Status</th></tr></thead><tbody id="payments-body"></tbody></table></div></div></div>
-<!-- Calendar -->
-<div id="sec-calendar" class="qr-section">
-<div class="qr-card"><h2>Payment Calendar</h2>
-<div class="qr-cal-nav"><button class="qr-btn qr-btn-pri qr-btn-sm" onclick="prevMonth()">&larr;</button><h3 id="cal-title"></h3><button class="qr-btn qr-btn-pri qr-btn-sm" onclick="nextMonth()">&rarr;</button></div>
-<div class="qr-cal" id="cal-grid"></div>
-<div style="margin-top:12px;font-size:.8rem"><span class="qr-badge badge-active">Green=Payment</span> <span class="qr-badge badge-ok">Blue=Today</span></div></div></div>
+<div class="qr-grid"><div class="qr-stat stat-guards"><div class="num" id="s-total">0</div><div class="lbl">Total Guards</div></div><div class="qr-stat stat-active"><div class="num" id="s-active">0</div><div class="lbl">Active</div></div><div class="qr-stat stat-term"><div class="num" id="s-term">0</div><div class="lbl">Terminated</div></div><div class="qr-stat stat-paid"><div class="num" id="s-paid">$0.00</div><div class="lbl">Total Paid</div></div><div class="qr-stat stat-expiry"><div class="num" id="s-expiry">0</div><div class="lbl">Licences Expiring</div></div></div>
+<div class="qr-card"><h2>Recent Activity</h2><div id="activity-log"><p style="color:var(--sub)">No guards yet.</p></div></div></div>
 <!-- Employment -->
 <div id="sec-employment" class="qr-section">
-<div class="qr-card"><h2>Employment Form</h2>
-<p style="color:var(--sub);margin-bottom:16px">Share this link with new guards for onboarding.</p>
-<div class="qr-card" style="background:#f0f9ff;border:2px solid var(--acc)"><h3 style="color:var(--acc)">Form Link</h3>
-<a href="https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform" target="_blank" style="color:var(--acc);word-break:break-all">https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform</a><br><br>
-<button class="qr-btn qr-btn-pri" onclick="navigator.clipboard.writeText('https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform');toast('Link copied!')">Copy Link</button></div>
-<div class="qr-card" style="margin-top:16px"><h3>Form Includes:</h3><ul style="padding-left:20px;line-height:2"><li>Employment Contract</li><li>Overtime Averaging Agreement</li><li>Confidentiality Agreement</li><li>Health &amp; Safety Policy</li><li>Workplace Violence &amp; Harassment Policy</li><li>Guard Conduct &amp; Operational Standards</li><li>Accessibility, Disconnecting, Electronic Monitoring Policies</li><li>Employee Details (Name, DOB, Address, SIN, Contact, Licence, First Aid, Direct Deposit, Tax Forms, Emergency Contact)</li></ul></div></div></div>
+<div class="qr-card"><h2>Employment Form</h2><p style="margin-bottom:16px;color:var(--sub)">Share this link with new guards for onboarding.</p>
+<p style="color:var(--acc);word-break:break-all"><a href="https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform" target="_blank" style="color:var(--acc)">https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform</a></p>
+<button class="qr-btn qr-btn-pri" style="margin-top:12px" onclick="navigator.clipboard.writeText('https://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform');toast('Link copied!')">Copy Link</button></div>
+<div class="qr-card"><h3>Form Includes:</h3><ul style="padding-left:20px;line-height:2;color:var(--sub)"><li>Employment Contract</li><li>Overtime Averaging Agreement</li><li>Confidentiality Agreement</li><li>Direct Deposit Form</li><li>Emergency Contact</li><li>Availability Schedule</li></ul></div></div>
 <!-- Emails -->
 <div id="sec-emails" class="qr-section">
-<div class="qr-card"><h2>Email Templates</h2>
+<div class="qr-card"><h2>Email Templates</h2></div>
 <div class="qr-grid">
-<div class="qr-card" style="border-left:4px solid var(--grn)"><h3 style="color:var(--grn)">Offer Letter</h3><p>Employment offer with position, rate, employment form link, Connecteam instructions.</p></div>
-<div class="qr-card" style="border-left:4px solid var(--red)"><h3 style="color:var(--red)">Termination Notice</h3><p>Official termination with reason, uniform return ($250 policy), final pay per ESA.</p></div>
-<div class="qr-card" style="border-left:4px solid var(--org)"><h3 style="color:var(--org)">Licence Renewal</h3><p>Renewal reminder with 3 options: Online, In-Person, or Alpha-assisted renewal.</p></div>
-<div class="qr-card" style="border-left:4px solid var(--acc)"><h3 style="color:var(--acc)">Welcome Onboarding</h3><p>Post-submission welcome with Connecteam login instructions.</p></div>
-</div>
-<div class="qr-card" style="margin-top:16px"><h3>Quick Generate</h3>
+<div class="qr-card" style="cursor:pointer;border-top:3px solid var(--grn)" onclick="showEmailModal('offer')"><h3>Offer Letter</h3><p style="color:var(--sub);font-size:.85rem">Employment offer with position, rate, form link, Connecteam instructions.</p></div>
+<div class="qr-card" style="cursor:pointer;border-top:3px solid var(--red)" onclick="showEmailModal('termination')"><h3>Termination Notice</h3><p style="color:var(--sub);font-size:.85rem">Official termination with reason, uniform return ($250 policy), final pay per ESA.</p></div>
+<div class="qr-card" style="cursor:pointer;border-top:3px solid var(--org)" onclick="showEmailModal('renewal')"><h3>Licence Renewal</h3><p style="color:var(--sub);font-size:.85rem">Renewal reminder with 3 options: Online, In-Person, or Alpha-assisted.</p></div>
+<div class="qr-card" style="cursor:pointer;border-top:3px solid var(--acc)" onclick="showEmailModal('welcome')"><h3>Welcome Onboarding</h3><p style="color:var(--sub);font-size:.85rem">Post-submission welcome with Connecteam login instructions.</p></div>
+</div></div>
+<!-- Quick Generate -->
+<div class="qr-card" style="margin:0 auto;max-width:1200px;padding:16px 32px">
+<h3 style="margin-bottom:12px">Quick Generate</h3>
 <div class="qr-grid">
 <div><label class="qr-label">Select Guard</label><select id="email-guard-select" class="qr-input"><option value="">Select Guard</option></select></div>
 <div><label class="qr-label">Template</label><select id="email-template" class="qr-input"><option value="offer">Offer Letter</option><option value="termination">Termination Notice</option><option value="renewal">Licence Renewal</option><option value="welcome">Welcome Onboarding</option></select></div>
 </div>
 <button class="qr-btn qr-btn-pri" onclick="quickGenerateEmail()" style="margin-top:12px">Generate Email</button>
-</div></div></div>
+</div>
+<!-- Hire -->
+<div id="sec-hire" class="qr-section">
+<div class="qr-card"><h2>Hire New Guard</h2>
+<form id="hire-form" style="margin-top:16px">
+<div class="qr-grid">
+<div><label class="qr-label">First Name</label><input class="qr-input" id="h-fn" required></div>
+<div><label class="qr-label">Last Name</label><input class="qr-input" id="h-ln" required></div>
+<div><label class="qr-label">Email</label><input class="qr-input" type="email" id="h-email" required></div>
+<div><label class="qr-label">Phone</label><input class="qr-input" id="h-phone" required></div>
+<div><label class="qr-label">Position</label><select class="qr-input" id="h-pos"><option>Uniformed Security Guard</option><option>Loss Prevention Officer</option><option>Mobile Patrol Guard</option><option>Supervisor</option></select></div>
+<div><label class="qr-label">Level</label><select class="qr-input" id="h-level"><option>Level 1</option><option>Level 2</option></select></div>
+<div><label class="qr-label">Wage ($/hr)</label><input class="qr-input" type="number" step="0.01" id="h-wage" required></div>
+<div><label class="qr-label">Licence #</label><input class="qr-input" id="h-lic"></div>
+<div><label class="qr-label">Licence Expiry</label><input class="qr-input" type="date" id="h-exp" required></div>
+</div>
+<button type="submit" class="qr-btn qr-btn-pri" style="margin-top:16px">Hire Guard</button>
+</form></div></div>
+<!-- Roster -->
+<div id="sec-roster" class="qr-section">
+<div class="qr-card"><h2>Guard Roster</h2><div id="roster-body" style="margin-top:16px;overflow-x:auto"></div></div></div>
+<!-- Payments -->
+<div id="sec-payments" class="qr-section">
+<div class="qr-card"><h2>Record Payment</h2>
+<div class="qr-grid" style="margin-top:16px">
+<div><label class="qr-label">Select Guard</label><select id="pay-guard" class="qr-input"><option value="">Select Guard</option></select></div>
+<div><label class="qr-label">Date</label><input class="qr-input" type="date" id="pay-date"></div>
+<div><label class="qr-label">Hours Worked</label><input class="qr-input" type="number" step="0.01" id="pay-hrs"></div>
+<div><label class="qr-label">Wage ($/hr)</label><input class="qr-input" type="number" step="0.01" id="pay-wage"></div>
+</div>
+<div style="margin-top:12px"><label class="qr-label">Description of Hours</label><textarea class="qr-input" id="pay-desc" placeholder="Describe work performed..."></textarea></div>
+<button class="qr-btn qr-btn-pri" style="margin-top:16px" onclick="recordPayment()">Record Payment</button></div>
+<div class="qr-card" style="margin-top:20px"><h2>Payment History</h2><div id="payments-body" style="margin-top:16px;overflow-x:auto"></div></div></div>
+<!-- Calendar -->
+<div id="sec-calendar" class="qr-section">
+<div class="qr-card"><h2>Payment Calendar</h2>
+<div class="qr-cal-nav"><button class="qr-btn qr-btn-sm qr-btn-pri" onclick="prevMonth()">&larr;</button><h3 id="cal-title"></h3><button class="qr-btn qr-btn-sm qr-btn-pri" onclick="nextMonth()">&rarr;</button></div>
+<div id="cal-grid" class="qr-cal"></div></div></div>
+<!-- Modal -->
+<div id="qr-modal" class="qr-modal" onclick="if(event.target===this)closeModal()"><div class="qr-modal-content" id="modal-body"></div></div>
 <script>
 const firebaseConfig={apiKey:'AIzaSyDummyKey',authDomain:'qrtms-e663c.firebaseapp.com',projectId:'qrtms-e663c',storageBucket:'qrtms-e663c.appspot.com',messagingSenderId:'000',appId:'1:000:web:000'};
 try{firebase.initializeApp(firebaseConfig)}catch(e){}
 const db=firebase.firestore();
 let guards=[],payments=[],currentCalMonth=new Date().getMonth(),currentCalYear=new Date().getFullYear();
 document.getElementById('hdr-date').textContent=new Date().toLocaleDateString();
-function toast(m,c){const t=document.getElementById('qr-toast');t.textContent=m;t.style.background=c||'var(--grn)';t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
-function showSection(n){document.querySelectorAll('.qr-section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-'+n).classList.add('active');document.querySelectorAll('.qr-nav button').forEach(b=>b.classList.remove('active'));document.querySelector('[data-sec="'+n+'"]').classList.add('active');if(n==='dashboard')renderDash();if(n==='roster')renderRoster();if(n==='payments')renderPay();if(n==='calendar')renderCal()}
+function toast(m,c){const t=document.getElementById('qr-toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+function showSection(n){document.querySelectorAll('.qr-section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-'+n).classList.add('active');document.querySelectorAll('.qr-nav button').forEach(b=>b.classList.remove('active'));event.target.classList.add('active')}
 function genId(){return 'G'+Date.now().toString(36).toUpperCase()}
 function daysUntil(d){if(!d)return 999;return Math.ceil((new Date(d)-new Date())/(864e5))}
-function cdBadge(d){const days=daysUntil(d);if(days<0)return '<span class="qr-countdown cd-red">EXPIRED</span>';if(days<=30)return '<span class="qr-countdown cd-red">'+days+'d</span>';if(days<=90)return '<span class="qr-countdown cd-yellow">'+days+'d</span>';return '<span class="qr-countdown cd-green">'+days+'d</span>'}
-function loadGuards(){db.collection('guards').orderBy('createdAt','desc').onSnapshot(s=>{guards=[];s.forEach(d=>{guards.push({id:d.id,...d.data()})});renderDash();renderRoster();popSelects()},e=>{console.log('Firestore:',e);toast('Connect Firebase to enable data','var(--org)')})}
-function loadPayments(){db.collection('payments').orderBy('createdAt','desc').onSnapshot(s=>{payments=[];s.forEach(d=>{payments.push({id:d.id,...d.data()})});renderPay();renderCal()},e=>console.log(e))}
-function hireGuard(){const f=document.getElementById('hire-form');const g={gid:genId(),firstName:f.firstName.value,lastName:f.lastName.value,email:f.email.value,phone:f.phone.value,position:f.position.value,level:f.level.value,rate:parseFloat(f.rate.value)||17.60,licenseNo:f.licenseNo.value,licenseExpiry:f.licenseExpiry.value,firstAidExpiry:f.firstAidExpiry.value,startDate:f.startDate.value,status:'Active',createdAt:new Date().toISOString()};if(!g.firstName||!g.lastName||!g.email){toast('Fill required fields','var(--red)');return}db.collection('guards').add(g).then(()=>{toast(g.firstName+' '+g.lastName+' hired!');f.reset()}).catch(e=>toast('Error: '+e.message,'var(--red)'))}
-function terminateGuard(id,nm){if(!confirm('Terminate '+nm+'?'))return;db.collection('guards').doc(id).update({status:'Terminated',terminatedAt:new Date().toISOString()}).then(()=>toast(nm+' terminated','var(--red)'))}
-function recordPayment(){const f=document.getElementById('pay-form');const p={guardId:f.guardId.value,wage:parseFloat(f.wage.value)||0,hours:parseFloat(f.hours.value)||0,description:f.description.value,amount:(parseFloat(f.wage.value)||0)*(parseFloat(f.hours.value)||0),date:f.payDate.value||new Date().toISOString().split('T')[0],status:'Pending',createdAt:new Date().toISOString()};if(!p.guardId||!p.hours){toast('Select guard & enter hours','var(--red)');return}const gd=guards.find(g=>g.id===p.guardId);if(gd){p.guardName=gd.firstName+' '+gd.lastName;p.guardEmail=gd.email}db.collection('payments').add(p).then(()=>{toast('$'+p.amount.toFixed(2)+' recorded!');f.reset()}).catch(e=>toast(e.message,'var(--red)'))}
-
-function genOffer(g){return 'ALPHA SECURITY SERVICES\nOFFER OF EMPLOYMENT\n\nDate: '+new Date().toLocaleDateString()+'\nRef: '+g.gid+'\n\nDear '+g.firstName+' '+g.lastName+',\n\nWe offer you the position of '+g.position+' ('+g.level+') at Alpha Security Services.\n\nStart Date: '+(g.startDate||'TBD')+'\nRate: $'+(g.rate||17.60).toFixed(2)+'/hr\n\nPlease complete the Employment Form:\nhttps://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform\n\nPolicies to accept: Employment Contract, Overtime Agreement, Confidentiality, H&S, Harassment, Guard Conduct, Accessibility, Disconnecting, Electronic Monitoring.\n\nAfter submission, log into Connecteam for scheduling.\n\nWelcome!\nMohammed Uwais Shaikh, CEO\n1-877-725-7422'}
-function genTerm(g,r){return 'ALPHA SECURITY SERVICES\nTERMINATION NOTICE\n\nDate: '+new Date().toLocaleDateString()+'\n\nDear '+g.firstName+' '+g.lastName+',\n\nYour employment is terminated effective immediately.\nReason: '+(r||'As discussed')+'\nID: '+g.gid+'\n\nReturn all property within 48hrs. $250 deduction applies for unreturned uniforms.\nFinal pay per Employment Standards Act.\n\n1-877-725-7422'}
-function genRenewal(g){var d=daysUntil(g.licenseExpiry);return 'ALPHA SECURITY SERVICES\nLICENCE RENEWAL REMINDER\n\nDear '+g.firstName+',\n\nYour licence expires '+g.licenseExpiry+' ('+d+' days).\n\nOption A - Online: ServiceOntario.ca\nOption B - In Person: ServiceOntario centre\nOption C - Reply RENEWAL ASSISTANCE for help\n\nRequirements: Valid First Aid/CPR, clean record, training hours, fee.\n\n1-877-725-7422'}
-function popSelects(){var opts='<option value="">Select Guard</option>'+guards.filter(g=>g.status==='Active').map(g=>'<option value="'+g.id+'">'+g.firstName+' '+g.lastName+'</option>').join('');var s1=document.getElementById('pay-guard-select');var s2=document.getElementById('email-guard-select');if(s1)s1.innerHTML=opts;if(s2)s2.innerHTML=opts}
-
-function renderDash(){var a=guards.filter(g=>g.status==='Active').length;var t=guards.filter(g=>g.status==='Terminated').length;var tp=payments.reduce((s,p)=>s+(p.amount||0),0);var ex=guards.filter(g=>g.status==='Active'&&daysUntil(g.licenseExpiry)<=90).length;document.getElementById('stat-total').textContent=guards.length;document.getElementById('stat-active').textContent=a;document.getElementById('stat-terminated').textContent=t;document.getElementById('stat-paid').textContent='$'+tp.toFixed(2);document.getElementById('stat-expiring').textContent=ex;document.getElementById('dash-activity').innerHTML=guards.slice(0,8).map(g=>'<div style="padding:8px 0;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between"><span>'+g.firstName+' '+g.lastName+' - '+g.position+'</span><span class="qr-badge '+(g.status==='Active'?'badge-active':'badge-terminated')+'">'+g.status+'</span></div>').join('')||'No guards yet.'}
-function renderRoster(){document.getElementById('roster-body').innerHTML=guards.map(g=>'<tr><td>'+g.gid+'</td><td>'+g.firstName+' '+g.lastName+'</td><td>'+g.position+'</td><td>'+(g.level||'-')+'</td><td>$'+(g.rate||17.60).toFixed(2)+'</td><td>'+cdBadge(g.licenseExpiry)+'</td><td>'+cdBadge(g.firstAidExpiry)+'</td><td><span class="qr-badge '+(g.status==='Active'?'badge-active':'badge-terminated')+'">'+g.status+'</span></td><td>'+(g.status==='Active'?'<button class="qr-btn qr-btn-pri qr-btn-sm" onclick="showEmail(\''+g.id+'\',\'offer\')">&#9993;</button> <button class="qr-btn qr-btn-org qr-btn-sm" onclick="showEmail(\''+g.id+'\',\'renewal\')">&#8634;</button> <button class="qr-btn qr-btn-red qr-btn-sm" onclick="showTermM(\''+g.id+'\',\''+g.firstName+' '+g.lastName+'\')">&times;</button>':'')+'</td></tr>').join('')}
-function renderPay(){document.getElementById('payments-body').innerHTML=payments.map(p=>'<tr><td>'+p.date+'</td><td>'+(p.guardName||'-')+'</td><td>$'+(p.wage||0).toFixed(2)+'</td><td>'+(p.hours||0)+'</td><td>$'+(p.amount||0).toFixed(2)+'</td><td>'+(p.description||'-')+'</td><td><span class="qr-badge '+(p.status==='Confirmed'?'badge-active':'badge-warn')+'">'+p.status+'</span></td></tr>').join('')}
-
-function renderCal(){var el=document.getElementById('cal-grid');var f=new Date(currentCalYear,currentCalMonth,1);var ld=new Date(currentCalYear,currentCalMonth+1,0).getDate();var sd=f.getDay();document.getElementById('cal-title').textContent=f.toLocaleString('default',{month:'long',year:'numeric'});var h='';['S','M','T','W','T','F','S'].forEach(d=>h+='<div class="qr-cal-day header">'+d+'</div>');for(var i=0;i<sd;i++)h+='<div class="qr-cal-day"></div>';var td=new Date();for(var d=1;d<=ld;d++){var ds=currentCalYear+'-'+String(currentCalMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var hp=payments.some(p=>p.date===ds);var it=d===td.getDate()&&currentCalMonth===td.getMonth()&&currentCalYear===td.getFullYear();h+='<div class="qr-cal-day'+(it?' today':'')+(hp?' has-payment':'')+'" onclick="showDayPay(\''+ds+'\')">'+ d+'</div>'}el.innerHTML=h}
-function prevMonth(){currentCalMonth--;if(currentCalMonth<0){currentCalMonth=11;currentCalYear--}renderCal()}
-function nextMonth(){currentCalMonth++;if(currentCalMonth>11){currentCalMonth=0;currentCalYear++}renderCal()}
+function updateStats(){const a=guards.filter(g=>g.status==='Active'),t=guards.filter(g=>g.status==='Terminated'),tp=payments.reduce((s,p)=>s+p.amount,0),ex=a.filter(g=>daysUntil(g.expiry)<=90).length;document.getElementById('s-total').textContent=guards.length;document.getElementById('s-active').textContent=a.length;document.getElementById('s-term').textContent=t.length;document.getElementById('s-paid').textContent='$'+tp.toFixed(2);document.getElementById('s-expiry').textContent=ex}
+function updateGuardSelects(){['pay-guard','email-guard-select'].forEach(id=>{const s=document.getElementById(id);if(!s)return;const v=s.value;s.innerHTML='<option value="">Select Guard</option>';guards.filter(g=>g.status==='Active').forEach(g=>{s.innerHTML+='<option value="'+g.id+'">'+g.firstName+' '+g.lastName+'</option>'});s.value=v})}
+function renderRoster(){const d=document.getElementById('roster-body');if(!guards.length){d.innerHTML='<p style="color:var(--sub)">No guards added.</p>';return}let h='<table class="qr-table"><tr><th>ID</th><th>Name</th><th>Position</th><th>Level</th><th>Wage</th><th>Licence</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>';guards.forEach(g=>{const du=daysUntil(g.expiry),ec=du<=0?'cd-red':du<=90?'cd-red':'cd-green';h+='<tr><td>'+g.id+'</td><td>'+g.firstName+' '+g.lastName+'</td><td>'+g.position+'</td><td>'+g.level+'</td><td>$'+g.wage+'</td><td>'+g.licence+'</td><td><span class="qr-countdown '+ec+'">'+du+' days</span></td><td><span class="badge badge-'+(g.status==='Active'?'active':'terminated')+'">'+g.status+'</span></td><td>'+(g.status==='Active'?'<button class="qr-btn qr-btn-sm qr-btn-red" onclick="terminateGuard(\''+g.id+'\')" >Terminate</button>':'--')+'</td></tr>'});h+='</table>';d.innerHTML=h}
+function renderPayments(){const d=document.getElementById('payments-body');if(!payments.length){d.innerHTML='<p style="color:var(--sub)">No payments recorded.</p>';return}let h='<table class="qr-table"><tr><th>Date</th><th>Guard</th><th>Hours</th><th>Wage</th><th>Amount</th><th>Description</th></tr>';payments.forEach(p=>{h+='<tr><td>'+p.date+'</td><td>'+p.guardName+'</td><td>'+p.hours+'</td><td>$'+p.wage+'</td><td>$'+p.amount.toFixed(2)+'</td><td>'+p.desc+'</td></tr>'});h+='</table><button class="qr-btn qr-btn-sm qr-btn-pri" onclick="downloadCSV()" style="margin-top:12px">Download CSV</button>';d.innerHTML=h}
+function downloadCSV(){let csv='Date,Guard,Hours,Wage,Amount,Description\n';payments.forEach(p=>{csv+=p.date+','+p.guardName+','+p.hours+','+p.wage+','+p.amount.toFixed(2)+',"'+p.desc+'"\n'});const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='QRTMS_Payments.csv';a.click()}
+document.getElementById('hire-form').onsubmit=function(e){e.preventDefault();const g={id:genId(),firstName:document.getElementById('h-fn').value,lastName:document.getElementById('h-ln').value,email:document.getElementById('h-email').value,phone:document.getElementById('h-phone').value,position:document.getElementById('h-pos').value,level:document.getElementById('h-level').value,wage:parseFloat(document.getElementById('h-wage').value),licence:document.getElementById('h-lic').value,expiry:document.getElementById('h-exp').value,status:'Active',hiredDate:new Date().toISOString().split('T')[0]};guards.push(g);saveData();refresh();toast('Guard '+g.firstName+' hired!');this.reset()}
+function terminateGuard(id){const g=guards.find(x=>x.id===id);if(g){g.status='Terminated';g.termDate=new Date().toISOString().split('T')[0];saveData();refresh();toast(g.firstName+' terminated')}}
+function recordPayment(){const gid=document.getElementById('pay-guard').value,g=guards.find(x=>x.id===gid);if(!g){toast('Select a guard');return}const hrs=parseFloat(document.getElementById('pay-hrs').value),wage=parseFloat(document.getElementById('pay-wage').value),date=document.getElementById('pay-date').value,desc=document.getElementById('pay-desc').value;if(!hrs||!wage||!date){toast('Fill all fields');return}const p={id:'P'+Date.now(),guardId:gid,guardName:g.firstName+' '+g.lastName,hours:hrs,wage:wage,amount:hrs*wage,date:date,desc:desc};payments.push(p);saveData();refresh();toast('Payment $'+(hrs*wage).toFixed(2)+' recorded');document.getElementById('pay-hrs').value='';document.getElementById('pay-wage').value='';document.getElementById('pay-desc').value=''}
+function renderCalendar(){const title=document.getElementById('cal-title'),grid=document.getElementById('cal-grid');const months=['January','February','March','April','May','June','July','August','September','October','November','December'];title.textContent=months[currentCalMonth]+' '+currentCalYear;grid.innerHTML='';['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{grid.innerHTML+='<div class="qr-cal-day qr-cal-day-header">'+d+'</div>'});const fd=new Date(currentCalYear,currentCalMonth,1).getDay(),daysInMonth=new Date(currentCalYear,currentCalMonth+1,0).getDate(),today=new Date();for(let i=0;i<fd;i++)grid.innerHTML+='<div class="qr-cal-day"></div>';for(let d=1;d<=daysInMonth;d++){const ds=currentCalYear+'-'+String(currentCalMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const hp=payments.some(p=>p.date===ds);const isToday=d===today.getDate()&&currentCalMonth===today.getMonth()&&currentCalYear===today.getFullYear();grid.innerHTML+='<div class="qr-cal-day'+(isToday?' today':'')+(hp?' has-payment':'')+'">'+d+(hp?'<br><span style="font-size:.6rem;color:var(--grn)">PAID</span>':'')+'</div>'}}
+function prevMonth(){currentCalMonth--;if(currentCalMonth<0){currentCalMonth=11;currentCalYear--}renderCalendar()}
+function nextMonth(){currentCalMonth++;if(currentCalMonth>11){currentCalMonth=0;currentCalYear++}renderCalendar()}
 function closeModal(){document.getElementById('qr-modal').classList.remove('show')}
-function showEmail(id,type){var g=guards.find(x=>x.id===id);if(!g)return;var e=type==='offer'?genOffer(g):genRenewal(g);document.getElementById('modal-body').innerHTML='<h2>'+(type==='offer'?'Offer':'Renewal')+' Email</h2><div class="qr-email-box">'+e+'</div><button class="qr-btn qr-btn-pri" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);toast(\'Copied!\')">Copy</button> <button class="qr-btn qr-btn-grn" onclick="closeModal()">Close</button>';document.getElementById('qr-modal').classList.add('show')}
-function showTermM(id,nm){var g=guards.find(x=>x.id===id);if(!g)return;document.getElementById('modal-body').innerHTML='<h2>Terminate: '+nm+'</h2><select id="tr" class="qr-input"><option>Performance Issues</option><option>Policy Violation</option><option>Attendance</option><option>Contract End</option><option>Misconduct</option></select><div class="qr-email-box">'+genTerm(g,'Performance Issues')+'</div><button class="qr-btn qr-btn-red" onclick="terminateGuard(\''+id+'\',\''+nm+'\');closeModal()">Confirm</button> <button class="qr-btn qr-btn-grn" onclick="closeModal()">Cancel</button>';document.getElementById('qr-modal').classList.add('show')}
-function showDayPay(d){var dp=payments.filter(p=>p.date===d);document.getElementById('modal-body').innerHTML='<h2>Payments: '+d+'</h2>'+(dp.length?dp.map(p=>'<div class="qr-card" style="margin:8px 0"><b>'+p.guardName+'</b> | '+p.hours+'hrs | $'+p.amount.toFixed(2)+'<br>'+p.description+'</div>').join(''):'<p>No payments</p>');document.getElementById('qr-modal').classList.add('show')}
-function quickGenerateEmail(){var gId=document.getElementById('email-guard-select').value;var tmpl=document.getElementById('email-template').value;var g=guards.find(x=>x.id===gId);if(!g){toast('Select guard','var(--red)');return}var e='';if(tmpl==='offer')e=genOffer(g);else if(tmpl==='termination')e=genTerm(g,'As discussed');else if(tmpl==='renewal')e=genRenewal(g);else e='Welcome '+g.firstName+'! Thank you for completing the form. Please log into Connecteam.\n\nAlpha Security\n1-877-725-7422';document.getElementById('modal-body').innerHTML='<h2>'+tmpl+' Email</h2><div class="qr-email-box">'+e+'</div><button class="qr-btn qr-btn-pri" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);toast(\'Copied!\')">Copy</button> <button class="qr-btn qr-btn-grn" onclick="closeModal()">Close</button>';document.getElementById('qr-modal').classList.add('show')}
-function downloadCSV(){var c='ID,Name,Position,Level,Rate,LicenceExpiry,Status\n';guards.forEach(g=>c+=g.gid+','+g.firstName+' '+g.lastName+','+g.position+','+(g.level||'')+','+(g.rate||'')+','+(g.licenseExpiry||'')+','+g.status+'\n');var b=new Blob([c],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='QRTMS_Guards.csv';a.click();toast('Downloaded!')}
-function downloadPayCSV(){var c='Date,Guard,Wage,Hours,Amount,Description,Status\n';payments.forEach(p=>c+=p.date+','+(p.guardName||'')+','+p.wage+','+p.hours+','+p.amount+','+(p.description||'').replace(/,/g,' ')+','+p.status+'\n');var b=new Blob([c],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='QRTMS_Payments.csv';a.click();toast('Downloaded!')}
-loadGuards();loadPayments();renderCal();
+function showEmailModal(type){const m=document.getElementById('modal-body');let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="font-family:Playfair Display,serif">';const templates={offer:{title:'Offer Letter',body:'Dear [Name],\n\nAlpha Security Services is pleased to extend an offer of employment for the position of [Position] ([Level]).\n\nWage: $[Wage]/hr\nStart Date: [Date]\n\nPlease complete the Employment Form:\nhttps://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform\n\nAfter submission, please log in to Connecteam for scheduling.\n\nWelcome to the team!\nAlpha Security Services'},termination:{title:'Termination Notice',body:'Dear [Name],\n\nThis letter confirms your employment with Alpha Security Services has been terminated effective [Date].\n\nPlease return all company property including uniform within 5 business days. Failure to return uniform will result in $250 deduction per ESA.\n\nYour final pay will be processed per Ontario Employment Standards Act.\n\nAlpha Security Services'},renewal:{title:'Licence Renewal Reminder',body:'Dear [Name],\n\nYour security guard licence expires in [Days] days.\n\nRenewal Options:\n\nOption A - Online: Visit ServiceOntario.ca > Private Security > Renew\nOption B - In Person: Visit your nearest ServiceOntario centre\nOption C - We Can Help: Reply RENEWAL ASSISTANCE and Alpha Security will guide you through the process.\n\nRequirements:\n- Valid ID\n- Renewal fee\n- Clean background check\n- Updated training certificate\n\nAlpha Security Services'},welcome:{title:'Welcome Onboarding',body:'Dear [Name],\n\nThank you for submitting your Employment Form!\n\nWelcome aboard to Alpha Security Services. Please log in to Connecteam to view your schedule and complete orientation modules.\n\nIf you have questions, contact your supervisor.\n\nAlpha Security Services'}};const tpl=templates[type];h+=tpl.title+'</h2><button class="qr-btn qr-btn-sm qr-btn-pri" onclick="closeModal()">Close</button></div>';h+='<div class="qr-email-box">'+tpl.body+'</div>';h+='<button class="qr-btn qr-btn-grn" style="margin-top:12px" onclick="navigator.clipboard.writeText(document.querySelector(\'.qr-email-box\').textContent);toast(\'Copied!\')">Copy Email</button>';m.innerHTML=h;document.getElementById('qr-modal').classList.add('show')}
+function quickGenerateEmail(){const gid=document.getElementById('email-guard-select').value,type=document.getElementById('email-template').value,g=guards.find(x=>x.id===gid);if(!g){showEmailModal(type);return}const m=document.getElementById('modal-body');let body='';const tpl={offer:'Dear '+g.firstName+',\n\nAlpha Security Services is pleased to offer you the position of '+g.position+' ('+g.level+').\n\nWage: $'+g.wage+'/hr\n\nPlease complete the Employment Form:\nhttps://docs.google.com/forms/d/1tmtvMkm5hUhLMT8RHFpSQ6wh4Elbnrub0-u9a0I2jAo/viewform\n\nAfter submission, log in to Connecteam.\n\nAlpha Security Services',termination:'Dear '+g.firstName+',\n\nYour employment has been terminated effective '+new Date().toLocaleDateString()+'.\n\nReturn uniform within 5 days ($250 policy).\nFinal pay per ESA.\n\nAlpha Security Services',renewal:'Dear '+g.firstName+',\n\nYour licence expires in '+daysUntil(g.expiry)+' days.\n\nOption A: Online at ServiceOntario.ca\nOption B: In Person at ServiceOntario\nOption C: Reply RENEWAL ASSISTANCE\n\nAlpha Security Services',welcome:'Dear '+g.firstName+',\n\nWelcome aboard! Please log in to Connecteam.\n\nAlpha Security Services'};body=tpl[type];m.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:20px"><h2 style="font-family:Playfair Display,serif">Email for '+g.firstName+'</h2><button class="qr-btn qr-btn-sm qr-btn-pri" onclick="closeModal()">Close</button></div><div class="qr-email-box">'+body+'</div><button class="qr-btn qr-btn-grn" style="margin-top:12px" onclick="navigator.clipboard.writeText(document.querySelector(\'.qr-email-box\').textContent);toast(\'Copied!\')">Copy</button>';document.getElementById('qr-modal').classList.add('show')}
+function saveData(){localStorage.setItem('qrtms_guards',JSON.stringify(guards));localStorage.setItem('qrtms_payments',JSON.stringify(payments))}
+function loadData(){try{guards=JSON.parse(localStorage.getItem('qrtms_guards'))||[];payments=JSON.parse(localStorage.getItem('qrtms_payments'))||[]}catch(e){guards=[];payments=[]}}
+function refresh(){updateStats();renderRoster();renderPayments();renderCalendar();updateGuardSelects()}
+loadData();refresh();
 </script></body></html>
